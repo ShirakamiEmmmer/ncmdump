@@ -19,12 +19,15 @@ def dump(input_path, output_path = None, skip = True):
     output_path = (lambda path, meta: os.path.splitext(path)[0] + '.' + meta['format']) if not output_path else output_path
     output_path_generator = (lambda path, meta: output_path) if not callable(output_path) else output_path
 
+
+    #这里定义了两次aes的密钥
     core_key = binascii.a2b_hex('687A4852416D736F356B496E62617857')
     meta_key = binascii.a2b_hex('2331346C6A6B5F215C5D2630553C2728')
 
     f = open(input_path, 'rb')
 
     # magic header
+    #开局先检测，是不是NCM格式
     header = f.read(8)
     assert binascii.b2a_hex(header) == b'4354454e4644414d'
 
