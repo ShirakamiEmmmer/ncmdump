@@ -31,14 +31,14 @@ def dump(input_path, output_path = None, skip = True):
     #检测8字节
     header = f.read(8)
     assert binascii.b2a_hex(header) == b'4354454e4644414d'
-#跳过2字节
+    #跳过2字节
     f.seek(2, 1)
 
     # key data
     #检测4字节
     key_length = f.read(4)
     key_length = struct.unpack('<I', bytes(key_length))[0]
-#读取key_length字节
+    #读取key_length字节 128
     key_data = bytearray(f.read(key_length))
     key_data = bytes(bytearray([byte ^ 0x64 for byte in key_data]))
 
@@ -59,7 +59,7 @@ def dump(input_path, output_path = None, skip = True):
     #读取4字节
     meta_length = f.read(4)
     meta_length = struct.unpack('<I', bytes(meta_length))[0]
-#读取meta_length字节
+    #读取meta_length字节 534
     if meta_length:
         meta_data = bytearray(f.read(meta_length))
         meta_data = bytes(bytearray([byte ^ 0x63 for byte in meta_data]))
@@ -71,10 +71,13 @@ def dump(input_path, output_path = None, skip = True):
         meta_data = json.loads(meta_data[6:])
     else:
         meta_data = {'format': 'flac' if os.fstat(f.fileno()).st_size > 1024 ** 2 * 16 else 'mp3'}
-#跳过5字节
+    #跳过5字节
     f.seek(5, 1)
 
     # album cover
+    #跳过8字节
+    #读取image size 309417字节
+    #310110
     image_space = f.read(4)
     image_space = struct.unpack('<I', bytes(image_space))[0]
     image_size = f.read(4)
